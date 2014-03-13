@@ -1,5 +1,8 @@
 #lang racket
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; 3 different ways to slice the table
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (type-tag x)
   (car x))
   
@@ -50,3 +53,6 @@
            (* 4 side))
           (else (error "Unknown message")))))
           
+; note we have to re-define operate
+(define (operate2 op obj)
+  (obj op))
