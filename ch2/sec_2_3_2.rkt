@@ -8,6 +8,7 @@
 ; define a derivative procedure that
 ; takes a procedure as its argument 
 ; and  produces a procedure as its value
+; numeric approximation
 (define (deriv f)
   (lambda (x)
     (/ (- (f (+ x dx))
@@ -78,3 +79,17 @@
 ; pull out the elements of our product
 (define m1 cadr)
 (define m2 caddr)
+
+; change of representation
+(define (make-sum2 a1 a2)
+  (cond ((and (number? a1)
+              (number? a2))
+         (+ a1 a2))
+        ((and (number? a1) (= a1 0))
+         a2)
+        ((and (number? a2) (= a2 0))
+         a1)
+        (else (list '+ a1 a2))))
+         
+(make-sum2 '(* 5 x x) 12)              
+        

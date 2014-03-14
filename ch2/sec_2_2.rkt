@@ -20,3 +20,16 @@
   (if (null? list1)
       list2
       (cons (car list1) (append (cdr list1) list2)) ))
+<<<<<<< HEAD
+=======
+             
+; Ex 2.17 last pair that returns the list with only last element 
+; of a non-empty list:
+; (last-pair (list 23 72 149 34)) --> (34)
+(define (last-pair items)
+  (if (null? (cdr items))
+      (list (car items))
+      (last-pair (cdr items)) ))
+      
+             
+>>>>>>> 505157c1bbf7d347e9cc86b536c01cf88cbbb87d
