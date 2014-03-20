@@ -18,7 +18,6 @@
       (cdr datum)
       (error "Bad tagged datum: CONTENTS" datum)))
 
-
 (define (install-rectangular-package)
   ;; internal procedures
   (define (real-part z) (car z))
@@ -26,7 +25,7 @@
   (define (make-from-real-imag x y) (cons x y))
   (define (magnitude z) exp)
     (sqrt (+ (square (real-part z))
-             (square (imag-part z)))))
+             (square (imag-part z))))
   (define (angle z)
     (atan (imag-part z) (real-part z)))
   (define (make-from-mag-ang r a)
@@ -42,7 +41,6 @@
     (put ’make-from-mag-ang ’rectangular
       (lambda (r a) (tag (make-from-mag-ang r a))))
 ’done)
-
 
 ; derivative sum
 (define (sum-d exp var)
@@ -66,6 +64,6 @@
 
 (put 'deriv 'exponent exp-d)
  
-; real call 
+; real example 
 (define poly (* 3 (square x)))
 (get 'deriv 'sum poly x)

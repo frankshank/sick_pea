@@ -28,5 +28,5 @@
   (if (null? (cdr items))
       (list (car items))
       (last-pair (cdr items)) ))
-      
-             
+
+(last-pair '(23 72 149 34))
