@@ -64,29 +64,29 @@
   'done)
 
 (define (make-sum x y) 
-   ((get 'make-sum '+) x y)) 
+  ((get 'make-sum '+) x y)) 
 
 
 ;; the product package
 (define (install-product-package) 
-   (define (make-product m1 m2) (cons m1 m2)) 
-   (define (multiplier p) (cadr p)) 
-   (define (multiplicand p) (caddr p)) 
-   (define (deriv-product exp var) 
-     (make-sum 
-      (make-product (multiplier exp) 
-                    (deriv (multiplicand exp) var))
-      (make-product (deriv (multiplier exp) var)
-                    (multiplicand exp))))
+  (define (make-product m1 m2) (cons m1 m2)) 
+  (define (multiplier p) (cadr p)) 
+  (define (multiplicand p) (caddr p)) 
+  (define (deriv-product exp var) 
+    (make-sum 
+     (make-product (multiplier exp) 
+                   (deriv (multiplicand exp) var))
+     (make-product (deriv (multiplier exp) var)
+                   (multiplicand exp))))
   
-   (define (tag x) (attach-tag '* x)) 
-   (put 'deriv '(*) deriv-product) 
-   (put 'make-product '* 
-        (lambda (x y) (tag (make-product x y)))) 
+  (define (tag x) (attach-tag '* x)) 
+  (put 'deriv '(*) deriv-product) 
+  (put 'make-product '* 
+       (lambda (x y) (tag (make-product x y)))) 
   'done) 
 
 (define (make-product x y) 
-   ((get 'make-product '*) x y))
+  ((get 'make-product '*) x y))
 
 
 ;; add the exponentiation rule
@@ -103,7 +103,7 @@
         ((= exponent 1) base)
         ((= base 1) 1)
         (else (list '** base exponent))))
-  
+
 (put 'deriv '** exponentiation-deriv)  
 
 ; real example 3x^2 +4x
