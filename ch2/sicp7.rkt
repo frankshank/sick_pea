@@ -15,7 +15,17 @@
           (else
            (error "Unknown op -- MAKE-FROM-REAL-IMAG" op))))
   dispatch)
-  
+
+(define (make-from-mag-ang r theta)
+  (define (dispatch op)
+    (cond ((eq? op 'real-part) (* r (cos theta)))
+          ((eq? op 'imag-part) (* r (sin theta)))
+          ((eq? op 'magnitude) r)
+          ((eq? op 'angle) theta)
+          (else
+           (error "Unknown op -- MAKE-FROM-MAG-ANGLE" op))))
+  dispatch)
+
 
 ;; dispatch table supports our get and put operations
 (define +optable+ (make-hash))
@@ -27,15 +37,17 @@
 
 ;; tagged data attaching returning tags and contents of cons cells
 (define (attach-tag type-tag contents)
-  (cons type-tag contents))
+  (cond ((number? contents) contents)
+        ((pair? contents) (cons type-tag contents))
+        (else (cons type-tag contents))))
 (define (type-tag datum)
-  (if (pair? datum)
-      (car datum)
-      (error "Bad tagged datum -- TYPE-TAG" datum)))
+  (cond ((pair? datum) (car datum))
+        ((number? datum) 'scheme-number)
+        (else (error "Bad tagged datum -- TYPE-TAG" datum))))
 (define (contents datum)
-  (if (pair? datum)
-      (cdr datum)
-      (error "Bad tagged datum -- CONTENTS" datum)))
+  (cond ((pair? datum) (cdr datum))
+        ((number? datum) datum)
+        (else (error "Bad tagged datum -- CONTENTS" datum))))
 
 
 ;; apply a generic operator op to a series of arguments
@@ -45,8 +57,8 @@
       (if proc
           (apply proc (map contents args))
           (error
-            "No method for these types -- APPLY-GENERIC"
-            (list op type-tags))))))
+           "No method for these types -- APPLY-GENERIC"
+           (list op type-tags))))))
 
 
 (define (install-rectangular-package)
@@ -128,23 +140,42 @@
        (lambda (z1 z2) (tag (mul-complex z1 z2))))
   (put 'div '(complex complex)
        (lambda (z1 z2) (tag (div-complex z1 z2))))
+  (put 'magnitude '(complex)
+       (lambda (z) (magnitude z)))
+  (put 'angle '(complex)
+       (lambda (z) (angle z)))
   (put 'make-from-real-imag 'complex
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'complex
        (lambda (r a) (tag (make-from-mag-ang r a))))
   'done)
-  
+
+
+;; scheme number package
+(define (install-scheme-number-package)
+  (define (tag x) (attach-tag 'scheme-number x))
+  (put 'add '(scheme-number scheme-number)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(scheme-number scheme-number)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(scheme-number scheme-number)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(scheme-number scheme-number)
+       (lambda (x y) (tag (/ x y))))
+  (put 'make 'scheme-number (lambda (x) (tag x)))
+  'done)
 
 (define (add x y) (apply-generic 'add x y))
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
- 
-  
+(define (=zero? x) (apply-generic '=zero? x))
+
+
 (install-rectangular-package)
 (install-polar-package)
 (install-complex-package)
-
+(install-scheme-number-package)
 
 (define (make-complex-from-real-imag x y)
   ((get 'make-from-real-imag 'complex) x y))
@@ -155,5 +186,15 @@
 (define (magnitude z) (apply-generic 'magnitude z))
 (define (angle z) (apply-generic 'angle z))
 
-  
+(define (make-complex-from-mag-angle r theta)
+  ((get 'make-from-mag-ang 'complex) r theta))
+
+;; patch the =zero command
+(put '=zero? '(scheme-number)
+     (lambda (z) (= z 0)))
+(put '=zero? '(complex)
+     (lambda (z) (and (= (imag-part z) 0)
+                      (= (real-part z) 0))))
+
+
 (define louis-reasoner-z (make-complex-from-real-imag 3 4))
