@@ -1,6 +1,13 @@
 #lang racket
 (define (square x) (* x x))
 
+;; shanked exponetial
+(define (expt x y)
+  (if (= y 1)
+      x
+      (* x (expt x (- y 1)))))
+
+
 (define (make-from-real-imag x y)
   (define (dispatch op)
     (cond ((eq? op 'real-part) x)
@@ -38,8 +45,6 @@ proc))
       (cdr datum)
       (error "Bad tagged datum -- CONTENTS" datum)))
 
-
-
 (define (apply-generic op . args)
   (let ((type-tags (map type-tag args)))
     (let ((proc (get op type-tags)))
@@ -61,6 +66,21 @@ proc))
                                 (list op type-tags))))))
               (error "No method for these types"
                      (list op type-tags)))))))
+
+
+(define (coerce-list lst types)
+  (let ((coerced '())
+        (get-coercion (type-tag (car lst)) ((car types))) coerced))        
+  (if (and (= 0 (cdr lst)
+           (= 0 (cdr types))
+       coerced)))
+       (cons ))))
+  
+   
+           
+      
+      
+  
 
 (define (scheme-number->complex n)
   (make-complex-from-real-imag (contents n) 0))
@@ -193,7 +213,10 @@ proc))
 
 (define (install-scheme-number-package)
   (define (tag x)
-    (attach-tag 'scheme-number x))    
+    (attach-tag 'scheme-number x))
+  (put 'exp '(scheme-number scheme-number)
+     (lambda (x y) (tag (expt x y)))) ; using primitive expt
+  (define (exp x y) (apply-generic 'exp x y))
   (put 'add '(scheme-number scheme-number)
        (lambda (x y) (tag (+ x y))))
   (put 'sub '(scheme-number scheme-number)
@@ -234,9 +257,7 @@ proc))
   
 (define louis-reasoner-z (make-complex-from-real-imag 3 4))
 
-(define (exp x y) (apply-generic 'exp x y))
-(put 'exp '(scheme-number scheme-number)
-     (lambda (x y) (tag (expt x y)))) ; using primitive expt
+
 (define (scheme-number->scheme-number n) n)
 (define (complex->complex z) z)
 (put-coercion 'scheme-number 'scheme-number
