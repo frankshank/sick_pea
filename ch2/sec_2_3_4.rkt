@@ -48,7 +48,7 @@
 
 
 ;; tree tests
-(define my-huff (make-code-tree l r))
+(define my-huff (make-code-tree (make-leaf 'A 8) (make-leaf 'B 2)))
 (displayln " ++ code-tree")
 (displayln my-huff)
 
