@@ -121,7 +121,7 @@
   (define (branch-correct? branch) 
     (if (leaf? branch) 
         (equal? symb (symbol-leaf branch)) 
-        (element-of-set? symb (symbols branch)))) 
+        (element-of-set? symb (symbols branch))))
   
   (let ((lb (left-branch tree)) 
         (rb (right-branch tree))) 
@@ -130,6 +130,8 @@
           ((branch-correct? rb) 
            (if (leaf? rb) '(1) (cons 1 (encode-symbol symb rb)))) 
           (else (error "bad symbol -- ENCODE-SYMBOL" symb)))))                                          
+;; TODO update and call left-branch right-branchs
+
 
 ;; tests
 (encode '(A D A B B C A) sample-tree) 
@@ -167,5 +169,6 @@
 ;; tests
 (displayln " ++ successive merge")
 (define test-tree (generate-huffman-tree '((A 3) (B 5) (C 6) (D 6)))) 
+(displayln test-tree)
 (encode '(A B C D) test-tree) 
 
